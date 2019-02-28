@@ -20,8 +20,10 @@ import { Game, GameServer } from 'oasis-game-client';
 import Web3 from 'web3';
 
 // Game component imports.
-import Board from '../../components/board';
-import Logo from '../../assets/logo.svg';
+import Board from '../../components/Board/Board.js';
+import GameLogo from '../../assets/logo_battleship_hd.png';
+import BrandLogo from '../../assets/OasisLabs_Vertical_Logo_Red_RGB.png';
+
 
 const Multiplayer = () => {
   // TODO: Better way to get game parameters.
@@ -32,9 +34,9 @@ const Multiplayer = () => {
   // The all-caps fields are injected by Webpack during the build.
   let eventsWeb3c = new Web3(new Web3.providers.WebsocketProvider(WS_ENDPOINT));
 
-  let createGame = async function () {
+  let createGame = async function() {
     let Web3c = require('web3c');
-    await Web3c.Promise
+    await Web3c.Promise;
 
     let web3 = new Web3(ethereum);
     await ethereum.enable();
@@ -42,60 +44,59 @@ const Multiplayer = () => {
     let server = new GameServer(CONTRACT_ADDRESS, {
       web3c,
       eventsWeb3c,
-      confidential: CONFIDENTIAL_CONTRACT
+      confidential: CONFIDENTIAL_CONTRACT,
     });
     let game = new Game(server, gameId);
     return game.ready();
-  }
+  };
 
-  let proxyPromise = Promise.all([
-    bindingsPromise,
-    createGame()
-  ]).then(async ([bindings, game]) => {
-    let builder = createProxyBuilder(bindings);
-    // The client-side seed in multiplayer mode does not matter.
-    let seed = Math.floor(Math.random() * 100000);
-    let proxy = await builder([1, 2], game, game.playerId, seed).ready();
-    return [proxy, game];
-  });
+  let proxyPromise = Promise.all([bindingsPromise, createGame()]).then(
+    async ([bindings, game]) => {
+      let builder = createProxyBuilder(bindings);
+      // The client-side seed in multiplayer mode does not matter.
+      let seed = Math.floor(Math.random() * 100000);
+      let proxy = await builder([1, 2], game, game.playerId, seed).ready();
+      return [proxy, game];
+    }
+  );
 
-  let PlayerComponent = (props) => {
-    let proxy = props.proxy
-    let game = props.game
+  let PlayerComponent = props => {
+    let proxy = props.proxy;
+    let game = props.game;
 
-    let playerId = game.playerId
+    let playerId = game.playerId;
     let Player = Client({
       board: Board,
       proxy,
       playerId,
       players: [1, 2],
       multiplayer: game,
-      debug: false
+      debug: false,
     });
 
     return (
       <div className="code flex flex-column w-100 h-100 items-center bg-light-gray">
-        <h1 className="f1 lh-title mb1">Battleship</h1>
-        <div class="flex justify-center">
-          <h4 className="pt0 mt3 mr2">with</h4>
-          <img className="h2" src={Logo} />
-        </div>
+        <img className="GameLogo" src={GameLogo} />
+        <img className="BrandLogo" src={BrandLogo} />
         <Player />
       </div>
     );
-  }
+  };
 
   return (
     <div class="code flex flex-column w-100 h-100 items-center">
       <GameWrapper proxyPromise={proxyPromise}>
         <PlayerComponent />
       </GameWrapper>
-      <h5 class="mt5">Want to build your own game? Go to the <a href="http://docs.oasiscloud.io/en/latest/gaming-sdk">Oasis Devnet</a> to get started.</h5>
+      <h5 class="mt5">
+        Want to build your own game? Go to the{' '}
+        <a href="http://docs.oasiscloud.io/en/latest/gaming-sdk">
+          Oasis Devnet
+        </a>{' '}
+        to get started.
+      </h5>
     </div>
   );
-}
+};
 
-render(
-    <Multiplayer />,
-    document.getElementById('app')
-);
+render(<Multiplayer />, document.getElementById('app'));

@@ -14,38 +14,43 @@ import bindingsPromise from '../../../core/client/';
 import createProxyBuilder from 'oasis-game-client-proxy';
 import { Client } from 'oasis-game-components';
 
-import Board from '../../components/board';
-import Logo from '../../assets/logo.svg';
+import Board from '../../components/Board/Board.js';
+import GameLogo from '../../assets/logo_battleship_hd.png';
+import BrandLogo from '../../assets/OasisLabs_Vertical_Logo_Red_RGB.png';
+
+import './index.css'
 
 window.bindingsPromise = bindingsPromise;
 
 class PlayerWrapper extends React.Component {
   constructor(props) {
-    super(props)
-    this.state = { currentPlayer: null }
+    super(props);
+    this.state = { currentPlayer: null };
 
-    const self = this
-    this.props.proxy.subscribe(function () { self._updatePlayer() })
+    const self = this;
+    this.props.proxy.subscribe(function() {
+      self._updatePlayer();
+    });
   }
 
-  _updatePlayer () {
-    let state = this.props.proxy._store.get_state()[1]
+  _updatePlayer() {
+    let state = this.props.proxy._store.get_state()[1];
     // TODO: this will not work with action_players
-    this.setState({ currentPlayer: state.ctx.current_player })
+    this.setState({ currentPlayer: state.ctx.current_player });
   }
 
-  _getDisplay (playerId) {
-    if (playerId === this.state.currentPlayer) return ''
-    return 'none'
+  _getDisplay(playerId) {
+    if (playerId === this.state.currentPlayer) return '';
+    return 'none';
   }
 
-  componentDidMount () {
-    this._updatePlayer()
+  componentDidMount() {
+    this._updatePlayer();
   }
 
-  render () {
-    const style1 = { display: this._getDisplay(1) }
-    const style2 = { display: this._getDisplay(2) }
+  render() {
+    const style1 = { display: this._getDisplay(1) };
+    const style2 = { display: this._getDisplay(2) };
     return (
       <div>
         <div style={style1}>
@@ -55,7 +60,7 @@ class PlayerWrapper extends React.Component {
           <this.props.playerTwo />
         </div>
       </div>
-    )
+    );
   }
 }
 
@@ -65,58 +70,59 @@ const Singleplayer = () => {
     let proxyBuilder = createProxyBuilder(bindings);
     let seed = Math.floor(Math.random() * 100000);
     return Promise.all([
-      proxyBuilder([1,2], null, 1, seed).ready(),
-      proxyBuilder([1,2], null, 2, seed).ready()
+      proxyBuilder([1, 2], null, 1, seed).ready(),
+      proxyBuilder([1, 2], null, 2, seed).ready(),
     ]);
-  }
+  };
 
   return (
-    <Async promise={proxiesPromise()} then={([proxy1, proxy2]) => {
-      // This simplifies local testing.
-      let tee = (function (d1, d2) {
-        return (action) => {
-          d1(action);
-          d2(action);
-        }
-      })(proxy1.dispatch.bind(proxy1), proxy2.dispatch.bind(proxy2));
+    <Async
+      promise={proxiesPromise()}
+      then={([proxy1, proxy2]) => {
+        // This simplifies local testing.
+        let tee = (function(d1, d2) {
+          return action => {
+            d1(action);
+            d2(action);
+          };
+        })(proxy1.dispatch.bind(proxy1), proxy2.dispatch.bind(proxy2));
 
-      proxy1.dispatch = tee;
-      proxy2.dispatch = tee;
+        proxy1.dispatch = tee;
+        proxy2.dispatch = tee;
 
-      let PlayerOne = Client({
-        board: Board,
-        proxy: proxy1,
-        playerId: 1,
-        players: [1, 2],
-        multiplayer: null,
-        debug: true
-      });
+        let PlayerOne = Client({
+          board: Board,
+          proxy: proxy1,
+          playerId: 1,
+          players: [1, 2],
+          multiplayer: null,
+          debug: false,
+        });
 
-      let PlayerTwo = Client({
-        board: Board,
-        proxy: proxy2,
-        playerId: 2,
-        players: [1, 2],
-        multiplayer: null,
-        debug: true
-      });
+        let PlayerTwo = Client({
+          board: Board,
+          proxy: proxy2,
+          playerId: 2,
+          players: [1, 2],
+          multiplayer: null,
+          debug: false,
+        });
 
-      console.log('rendering')
-      return (
-        <div className="code flex flex-column w-100 h-100 items-center bg-light-gray">
-          <h1 className="f1 lh-title mb1">Battleship</h1>
-          <div className="flex justify-center">
-            <h4 className="pt0 mt3 mr2">with</h4>
-            <img className="h2" src={Logo} />
+        console.log('rendering');
+        return (
+          <div className="code flex flex-column w-100 h-100 items-center bg-light-gray">
+            <img className="GameLogo" src={GameLogo} />
+            <img className="BrandLogo" src={BrandLogo} />
+            <PlayerWrapper
+              proxy={proxy1}
+              playerOne={PlayerOne}
+              playerTwo={PlayerTwo}
+            />
           </div>
-          <PlayerWrapper proxy={proxy1} playerOne={PlayerOne} playerTwo={PlayerTwo} />
-        </div>
-      );
-    }} />
+        );
+      }}
+    />
   );
-}
+};
 
-render(
-    <Singleplayer />,
-    document.getElementById('app')
-);
+render(<Singleplayer />, document.getElementById('app'));
