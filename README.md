@@ -1,5 +1,5 @@
-# battleship-demo-prebuilt
-A prebuilt version of the Battleship demo, designed for easy UI testing.
+# game-demos-prebuilt
+A prebuilt version of the Connect Four demo, designed for easy UI testing.
 
 ### Usage
 1. `npm i`
