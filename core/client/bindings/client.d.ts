@@ -6,5 +6,4 @@ export class Proxy {
   get_state(): any;
   get_player_id(): number;
   dispatch(arg0: any): void;
-  bump_seed(): void;
 }
