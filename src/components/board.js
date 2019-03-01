@@ -10,116 +10,259 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { GameInfo } from 'oasis-game-components';
 import './board.css';
+import './cardstyles.css';
+
+const SUITES = ['C', 'D', 'H', 'S']
+const RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', 'J', 'Q', 'K']
+
+// Import all the cards in src/assets/cards directory. This is needed for webpack
+function importAll(r) {
+  return r.keys().map(r);
+}
+// importAll(require.context('../assets/cards', false, /\.(png|jpe?g|svg)$/));
 
 class Board extends React.Component {
+
   static propTypes = {
     G: PropTypes.any.isRequired,
     ctx: PropTypes.any.isRequired,
     moves: PropTypes.any.isRequired,
     playerID: PropTypes.number,
     isSpectating: PropTypes.bool,
-    isActive: PropTypes.bool,
-    isMultiplayer: PropTypes.bool,
+    isMultiplayer: PropTypes.bool
   };
 
-  getCoords (id) {
-    return id.split('-').map(n => +n)
-  }
-
-  onClick = (row, col) => {
-    console.log('CLICKING:', row, col)
-    if (this.isActive(row, col)) {
-      this.props.moves.click_slot(col)
-    }
+  onClick = id => {
+    this.props.moves.poker_move(id)
   };
 
-  isActive(row, col) {
-    let ctx = this.props.ctx
-    let playerId = this.props.playerID
-    let myTurn = playerId && (
-      ctx.current_player === playerId ||
-      (ctx.active_players && ctx.active_players.indexOf(playerId) !== -1)
-    )
-    return myTurn && this.props.G.grid[row][col] === -1
+  format (cellValue) {
+    if (cellValue === -1) return '';
+    return cellValue;
   }
 
   getVictoryInfo () {
     let gameover = this.props.ctx.gameover
     if (gameover) {
       let victoryInfo = {};
-      if (!gameover.winner) {
-        var color = 'orange'
-        var text = 'It\'s a draw!'
-      } else {
-        color = (gameover.winner == this.props.playerID || this.props.isSpectating) ? 'green' : 'red'
-        text = `Player ${gameover.winner} won!`
-      }
+      var color = (gameover.winner == this.props.playerID || this.props.isSpectating) ? 'green' : 'red'
+      var text = `Player ${gameover.winner} won! `
       victoryInfo.winner = <div className={color} id="winner">{text}</div>;
-      victoryInfo.color = color
-      victoryInfo.cells = new Set(gameover.winning_cells)
       return victoryInfo
     }
     return null
   }
 
-  getCellClass (victoryInfo, id) {
-    let cellClass = this.isActive(...this.getCoords(id)) ? 'active' : ''
-    if (victoryInfo && victoryInfo.cells.has(id)) {
-      cellClass += ` bg-${victoryInfo.color} white`
-    }
-    return cellClass
+  getPotInfo() {
+    return this.props.G.hand_pot.toString()
   }
 
-  renderPlayer (playerId) {
-    if (playerId == -1) return ''
-    let color = playerId === 1 ? 'red' : 'blue'
-    return (
-      <div className="svg-container">
-        <svg viewBox="0 0 100 100">
-          <circle cx="50%" cy="50%" fill={color} r="30" />
-        </svg>
-      </div>
-    );
+  getChipInfo() {
+    return this.props.G.chips.toString()
   }
 
-  render() { let victoryInfo = this.getVictoryInfo() 
-    let tbody = [];
-    for (let i = 5; i >= 0; i--) {
-      let cells = [];
+  getChipTableInfo() {
+    return this.props.G.chip_table.toString()
+  }
 
-      for (let j = 0; j < 7; j++) {
-        const id = `${i}-${j}`;
+  renderCards(handJSON) {
 
-        let cellPlayer = this.props.G.grid[i][j]
-        let cellValue = this.renderPlayer(cellPlayer)
-
-        cells.push(
-          <td
-            key={id}
-            className={this.getCellClass(victoryInfo, id)}
-            onClick={() => this.onClick(...this.getCoords(id))}
-          >
-            {cellValue}
-          </td>
-        );
-      }
-      tbody.push(<tr key={i}>{cells}</tr>);
+    if (handJSON.length == 0) {
+      return;
     }
 
-    let player = null;
-    if (this.props.playerID) {
-      player = <div id="player">Player: {this.props.playerID}</div>;
+    var renderCards = [];
+
+    for (var i = 0; i < handJSON.length; i++) {
+      renderCards.push(
+        <img key={`card-${i}`} className='card' src={this.cardJSONtoString(handJSON[i])}></img>
+      )
     }
 
     let rendered = (
-      <div className="flex flex-column justify-center items-center mt3">
+      <div className="hand hhand active-hand">
+      {renderCards}
+      </div>
+    );
+
+    return rendered
+  }
+
+  formatLastMove() {
+    return this.props.G.last_move
+  }
+
+  formatHandResult() {
+    return this.props.G.hand_result
+  }
+
+  // Ranks come in from value 1-13.
+  cardJSONtoString(card) {
+    let rank = card.rank;
+    let suit = card.suit;
+
+    var suitChar = '';
+    switch (suit) {
+      case 0: 
+        suitChar = 'D';
+        break;
+      case 1: 
+        suitChar = 'C';
+        break;
+      case 2: 
+        suitChar = 'H';
+        break;
+      case 3: 
+        suitChar = 'S';
+        break;
+      default:
+        break;
+    }
+
+    var rankString = "";
+    switch (rank) {
+      case 13: 
+        rankString = 'A';
+        break;
+      case 12: 
+        rankString = 'K';
+        break;
+      case 11: 
+        rankString = 'Q';
+        break;
+      case 10: 
+        rankString = 'J';
+        break;
+      default:
+        rankString = (rank + 1).toString()
+        break;
+    }
+
+    return rankString + suitChar + '.svg' 
+  }
+
+  render() {
+
+    let lastMove = this.formatLastMove();
+
+    let victoryInfo = this.getVictoryInfo() 
+    let tbody = [];
+    let cells = [];
+    
+    // Hit
+    let id = '';
+    let displayMessage = [];
+
+    if (lastMove.indexOf("HAND OVER") !== -1) {
+
+      id = 'Confirm';
+      cells.push(
+        <td
+          key={id}
+          className={'active'}
+          onClick={() => this.onClick(99)}
+        >
+          {id}
+        </td>
+      );
+    
+      let hand_result = this.formatHandResult();
+
+      displayMessage.push(
+        <p>Hand Result: {hand_result}</p>
+      );
+
+    } else {  
+
+      // Only fold if responding to a bet, raise or all in
+      let responding = (lastMove.indexOf("Bet") !== -1 || lastMove.indexOf("Raise") !== -1 || lastMove.indexOf("All") !== -1);
+
+      if (responding) {
+        id = 'Fold';
+        cells.push(
+          <td
+            key={id}
+            className={'active'}
+            onClick={() => this.onClick(0)}
+          >
+            {id}
+          </td>
+        );
+      }
+
+      // CHECK or CALL
+      if (responding) {
+        id = 'Call';
+      } else {
+        id = 'Check';
+      }
+        
+      cells.push(
+        <td
+          key={id}
+          className={'active'}
+          onClick={() => this.onClick(1)}
+        >
+          {id}
+        </td>
+      );
+
+      // If all in, no more additional bet, raise or all in.
+      if (lastMove.indexOf("All") == -1) {
+
+        // BET or RAISE
+        if (responding) {
+          id = 'Raise';
+        } else {
+          id = 'Bet';
+        }
+        cells.push(
+          <td
+            key={id}
+            className={'active'}
+            onClick={() => this.onClick(2)}
+          >
+            {id}
+          </td>
+        );
+
+        // All in, exists regardless of responding or not
+        id = 'All in';  
+        cells.push(
+          <td
+            key={id}
+            className={'active'}
+            onClick={() => this.onClick(3)}
+          >
+            {id}
+          </td>
+        );
+
+      }
+
+    }
+
+    tbody.push(<tr key={'m'}>{cells}</tr>);
+
+    let tableInfo = this.renderCards(this.props.G.card_table)
+    let handInfo = this.renderCards(this.props.G.hands[this.props.playerID - 1])
+
+    displayMessage.push(<p key={'p'}>Last Move: {lastMove}</p>)
+
+    let rendered = (
+      <div className="flex flex-column justify-center items-center">
+        {tableInfo}
+        {handInfo}
+        {displayMessage}
+        <p>Pot: {this.getPotInfo()}</p>
+        <p>Chips on Table: {this.getChipTableInfo()}</p>
+        <p>Chips: {this.getChipInfo()}</p>
         <table id="board">
           <tbody>{tbody}</tbody>
         </table>
-        <GameInfo winner={victoryInfo ? victoryInfo.winner : null} {...this.props} />
+        <GameInfo winner={victoryInfo ? victoryInfo.winner: null} {...this.props} />
       </div>
     );
-    console.log('RETURNING RENDERED:', rendered)
     return rendered;
   }
 }

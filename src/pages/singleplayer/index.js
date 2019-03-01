@@ -31,7 +31,7 @@ class PlayerWrapper extends React.Component {
   _updatePlayer () {
     let state = this.props.proxy._store.get_state()[1]
     // TODO: this will not work with action_players
-    this.setState({ currentPlayer: state.ctx.current_player })
+    this.setState({ currentPlayer: state.ctx.action_players[0] })
   }
 
   _getDisplay (playerId) {
