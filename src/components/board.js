@@ -19,7 +19,7 @@ const RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', 'J', 'Q', 'K']
 function importAll(r) {
   return r.keys().map(r);
 }
-// importAll(require.context('../assets/cards', false, /\.(png|jpe?g|svg)$/));
+importAll(require.context('../assets/cards', false, /\.(png|jpe?g|svg)$/));
 
 class Board extends React.Component {
 
