@@ -32,7 +32,7 @@ const Tile = function({ board, tile, onClick, isClickable = false }) {
 Tile.propTypes = {
   board: PropTypes.oneOf(['player','opponent']).isRequired,
   tile: PropTypes.any.isRequired,
-  isClickable: PropTypes.bool,
+  isClickable: PropTypes.bool.isRequired,
   onClick: PropTypes.func.isRequired,
 };
 

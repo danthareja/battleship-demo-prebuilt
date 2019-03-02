@@ -37,7 +37,7 @@ class Board extends React.Component {
     const myTurn =
       playerID &&
       (ctx.current_player === playerID ||
-        (ctx.active_players && ctx.active_players.indexOf(playerID) !== -1));
+        (typeof ctx.active_players !== 'undefined' && ctx.active_players.indexOf(playerID) !== -1));
 
     return !ctx.gameover && myTurn && opponent[x][y] === 'Water';
   }
