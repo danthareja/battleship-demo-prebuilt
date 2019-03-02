@@ -39,24 +39,17 @@ class PlayerWrapper extends React.Component {
     this.setState({ currentPlayer: state.ctx.current_player });
   }
 
-  _getDisplay(playerId) {
-    if (playerId === this.state.currentPlayer) return '';
-    return 'none';
-  }
-
   componentDidMount() {
     this._updatePlayer();
   }
 
   render() {
-    const style1 = { display: this._getDisplay(1) };
-    const style2 = { display: this._getDisplay(2) };
     return (
       <div>
-        <div style={style1}>
+        <div>
           <this.props.playerOne />
         </div>
-        <div style={style2}>
+        <div>
           <this.props.playerTwo />
         </div>
       </div>
