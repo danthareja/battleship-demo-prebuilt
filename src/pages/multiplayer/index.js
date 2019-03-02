@@ -20,8 +20,11 @@ import { Game, GameServer } from 'oasis-game-client';
 import Web3 from 'web3';
 
 // Game component imports.
-import Board from '../../components/board';
-import Logo from '../../assets/logo.svg';
+import Board from '../../components/Board/Board';
+import GameLogo from '../../assets/logo_battleship_hd.png';
+import BrandLogo from '../../assets/OasisLabs_Vertical_Logo_Red_RGB.png';
+
+import './index.css';
 
 const Multiplayer = () => {
   // TODO: Better way to get game parameters.
@@ -75,11 +78,8 @@ const Multiplayer = () => {
 
     return (
       <div className="code flex flex-column w-100 h-100 items-center bg-light-gray">
-        <h1 className="f1 lh-title mb1">Battleship</h1>
-        <div class="flex justify-center">
-          <h4 className="pt0 mt3 mr2">with</h4>
-          <img className="h2" src={Logo} />
-        </div>
+        <img className="GameLogo" src={GameLogo} />
+        <img className="BrandLogo" src={BrandLogo} />
         <Player />
       </div>
     );
