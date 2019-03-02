@@ -32,14 +32,14 @@ class Board extends React.Component {
 
   isClickable(x, y) {
     const { ctx, playerID } = this.props;
-    const { other } = this.getBoards();
+    const { opponent } = this.getBoards();
 
     const myTurn =
       playerID &&
       (ctx.current_player === playerID ||
         (ctx.active_players && ctx.active_players.indexOf(playerID) !== -1));
 
-    return !ctx.gameover && myTurn && other[x][y] === 'Water';
+    return !ctx.gameover && myTurn && opponent[x][y] === 'Water';
   }
 
   isShip(tile) {
@@ -90,7 +90,7 @@ class Board extends React.Component {
     return 'vertical';
   }
 
-  getShip(board, tile, x, y) {
+  getShip(id, board, tile, x, y) {
     if (!this.isShip(tile)) {
       return null;
     }
@@ -99,11 +99,26 @@ class Board extends React.Component {
       return null;
     }
 
-    return {
-      size: this.getShipSize(tile),
-      dead: this.getShipHitsLeft(tile) === 0,
-      orientation: this.getShipOrientation(board, tile, x, y),
-    };
+    if (id === 'player') {
+      return {
+        dead: this.getShipHitsLeft(tile) === 0,
+        size: this.getShipSize(tile),
+        orientation: this.getShipOrientation(board, tile, x, y),
+      };
+    }
+
+    if (id === 'opponent') {
+      const dead = typeof tile['Ship'] === 'number'
+      if (dead) {
+        return {
+          dead,
+          size: this.getShipSize(tile),
+          orientation: this.getShipOrientation(board, tile, x, y),
+        };
+      }
+    }
+
+    return null;
   }
 
   getVictoryInfo() {
@@ -135,13 +150,13 @@ class Board extends React.Component {
     switch (this.props.playerID) {
       case 1:
         return {
-          mine: this.props.G.boards[0],
-          other: this.props.G.boards[1],
+          player: this.props.G.boards[0],
+          opponent: this.props.G.boards[1],
         };
       case 2:
         return {
-          mine: this.props.G.boards[1],
-          other: this.props.G.boards[0],
+          player: this.props.G.boards[1],
+          opponent: this.props.G.boards[0],
         };
       default:
         throw new Error('Invalid player');
@@ -161,14 +176,16 @@ class Board extends React.Component {
 
   render() {
     let victoryInfo = this.getVictoryInfo();
-    let { mine, other } = this.getBoards();
+    let { player, opponent } = this.getBoards();
 
     return (
       <React.Fragment>
         <Background>
-          <Grid board={mine} getShip={this.getShip.bind(this)} />
+          <Grid id="player" board={player} getShip={this.getShip.bind(this)} />
           <Grid
-            board={other}
+            id="opponent"
+            board={opponent}
+            getShip={this.getShip.bind(this)}
             isClickable={this.isClickable.bind(this)}
             onClick={this.onClick.bind(this)}
           />

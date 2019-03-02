@@ -3,11 +3,14 @@ import PropTypes from 'prop-types';
 import Peg from './Peg';
 import './Tile.css';
 
-const Tile = function({ tile, onClick, isClickable = false }) {
+const Tile = function({ board, tile, onClick, isClickable = false }) {
   let peg = null;
 
   if (typeof tile === 'object') {
-    if (tile['Hit'] !== undefined) {
+    if (typeof tile['Hit'] === 'number') {
+      peg = <Peg hit />;
+    }
+    if (board === 'opponent' && typeof tile['Ship'] === 'number') {
       peg = <Peg hit />;
     }
   } else if (typeof tile === 'string') {
@@ -27,6 +30,7 @@ const Tile = function({ tile, onClick, isClickable = false }) {
 };
 
 Tile.propTypes = {
+  board: PropTypes.oneOf(['player','opponent']).isRequired,
   tile: PropTypes.any.isRequired,
   isClickable: PropTypes.bool,
   onClick: PropTypes.func.isRequired,
