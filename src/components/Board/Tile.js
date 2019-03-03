@@ -4,7 +4,7 @@ import Token from './Token';
 
 import './Tile.css';
 
-const Tile = function({ tile, onClick, isClickable }) {
+const Tile = function({ tile }) {
   let token = null;
 
   if (tile === 1) {

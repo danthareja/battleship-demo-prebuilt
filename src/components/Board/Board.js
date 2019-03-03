@@ -66,11 +66,11 @@ class Board extends React.Component {
 
   render() {
     let victoryInfo = this.getVictoryInfo()
-    console.log(this.props.G.grid)
+
     return (
       <React.Fragment>
         <Background>
-          <Grid board={this.props.G.grid} isClickable={this.isClickable.bind(this)} onClick={this.onClick.bind(this)}/>
+          <Grid player={this.props.playerID} board={this.props.G.grid} isClickable={this.isClickable.bind(this)} onClick={this.onClick.bind(this)}/>
         </Background>
         <GameInfo
           winner={victoryInfo ? victoryInfo.winner : null}

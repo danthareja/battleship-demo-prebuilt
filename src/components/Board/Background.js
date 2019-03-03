@@ -2,11 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Grid from './Grid';
 
+
 import './Background.css';
 
 const Background = function({ children }) {
   return (
     <div className="Background">
+      <img className="Background__image" src={require("../../assets/2x/connect4_board.png")} alt="Background" />
       {children}
     </div>
   );
