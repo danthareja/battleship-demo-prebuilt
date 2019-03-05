@@ -14,8 +14,11 @@ import bindingsPromise from '../../../core/client/';
 import createProxyBuilder from 'oasis-game-client-proxy';
 import { Client } from 'oasis-game-components';
 
-import Board from '../../components/board';
-import Logo from '../../assets/logo.svg';
+import Board from '../../components/Board/Board';
+import GameLogo from '../../assets/2x/logo_poker_hd.png';
+import BrandLogo from '../../assets/OasisLabs_Vertical_Logo_Red_RGB.png';
+
+import './index.css'
 
 window.bindingsPromise = bindingsPromise;
 
@@ -34,24 +37,17 @@ class PlayerWrapper extends React.Component {
     this.setState({ currentPlayer: state.ctx.action_players[0] })
   }
 
-  _getDisplay (playerId) {
-    if (playerId === this.state.currentPlayer) return ''
-    return 'none'
-  }
-
   componentDidMount () {
     this._updatePlayer()
   }
 
   render () {
-    const style1 = { display: this._getDisplay(1) }
-    const style2 = { display: this._getDisplay(2) }
     return (
       <div>
-        <div style={style1}>
+        <div>
           <this.props.playerOne />
         </div>
-        <div style={style2}>
+        <div>
           <this.props.playerTwo />
         </div>
       </div>
@@ -89,7 +85,7 @@ const Singleplayer = () => {
         playerId: 1,
         players: [1, 2],
         multiplayer: null,
-        debug: true
+        debug: false
       });
 
       let PlayerTwo = Client({
@@ -98,17 +94,14 @@ const Singleplayer = () => {
         playerId: 2,
         players: [1, 2],
         multiplayer: null,
-        debug: true
+        debug: false
       });
 
       console.log('rendering')
       return (
         <div className="code flex flex-column w-100 h-100 items-center bg-light-gray">
-          <h1 className="f1 lh-title mb1">Connect Four</h1>
-          <div className="flex justify-center">
-            <h4 className="pt0 mt3 mr2">with</h4>
-            <img className="h2" src={Logo} />
-          </div>
+          <img className="GameLogo" src={GameLogo} />
+          <img className="BrandLogo" src={BrandLogo} />
           <PlayerWrapper proxy={proxy1} playerOne={PlayerOne} playerTwo={PlayerTwo} />
         </div>
       );
