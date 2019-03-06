@@ -21,6 +21,8 @@ import Web3 from 'web3';
 
 // Game component imports.
 import Board from '../../components/Board/Board.js';
+import Footer from '../../components/Footer/Footer.js';
+
 import GameLogo from '../../assets/logo_battleship_hd.png';
 import BrandLogo from '../../assets/OasisLabs_Vertical_Logo_Red_RGB.png';
 
@@ -88,13 +90,8 @@ const Multiplayer = () => {
       <GameWrapper proxyPromise={proxyPromise}>
         <PlayerComponent />
       </GameWrapper>
-      <h5 class="mt5">
-        Want to build your own game? Go to the{' '}
-        <a href="http://docs.oasiscloud.io/en/latest/gaming-sdk">
-          Oasis Devnet
-        </a>{' '}
-        to get started.
-      </h5>
+      <div style={{marginTop: '40px'}} />
+      <Footer />
     </div>
   );
 };

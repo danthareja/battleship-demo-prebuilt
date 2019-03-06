@@ -15,6 +15,8 @@ import createProxyBuilder from 'oasis-game-client-proxy';
 import { Client } from 'oasis-game-components';
 
 import Board from '../../components/Board/Board.js';
+import Footer from '../../components/Footer/Footer.js';
+
 import GameLogo from '../../assets/logo_battleship_hd.png';
 import BrandLogo from '../../assets/OasisLabs_Vertical_Logo_Red_RGB.png';
 
@@ -111,6 +113,8 @@ const Singleplayer = () => {
               playerOne={PlayerOne}
               playerTwo={PlayerTwo}
             />
+            <div style={{marginTop: '40px'}} />
+            <Footer />
           </div>
         );
       }}
