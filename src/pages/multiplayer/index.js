@@ -88,7 +88,8 @@ const Multiplayer = () => {
       <GameWrapper proxyPromise={proxyPromise}>
         <PlayerComponent />
       </GameWrapper>
-      <h5 class="mt5">Want to build your own game? Go to the <a href="http://docs.oasiscloud.io/en/latest/gaming-sdk">Oasis Devnet</a> to get started.</h5>
+      <div style={{marginBottom: '40px'}} />
+      <Footer />
     </div>
   );
 }

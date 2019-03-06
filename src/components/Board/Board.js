@@ -17,7 +17,6 @@ import PlayerCards from './PlayerCards';
 import OpponentCards from './OpponentCards'
 import ActionList from './ActionList';
 import InformationList from './InformationList';
-import Footer from './Footer';
 
 // Import all the cards in src/assets/2x/cards directory. This is needed for webpack
 function importAll(r) {
@@ -80,8 +79,6 @@ class Board extends React.Component {
         <InformationList G={this.props.G} playerID={this.props.playerID}/>
         <ActionList lastMove={this.props.G.last_move} onClick={this.onClick}/>
         <GameInfo winner={victoryInfo ? victoryInfo.winner : null} {...this.props} />
-        <div style={{marginBottom: '40px'}} />
-        <Footer />
       </div>
     );
   }

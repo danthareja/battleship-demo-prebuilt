@@ -15,6 +15,8 @@ import createProxyBuilder from 'oasis-game-client-proxy';
 import { Client } from 'oasis-game-components';
 
 import Board from '../../components/Board/Board';
+import Footer from '../../components/Footer/Footer';
+
 import GameLogo from '../../assets/2x/logo_poker_hd.png';
 import BrandLogo from '../../assets/OasisLabs_Vertical_Logo_Red_RGB.png';
 
@@ -103,6 +105,8 @@ const Singleplayer = () => {
           <img className="GameLogo" src={GameLogo} />
           <img className="BrandLogo" src={BrandLogo} />
           <PlayerWrapper proxy={proxy1} playerOne={PlayerOne} playerTwo={PlayerTwo} />
+          <div style={{marginBottom: '40px'}} />
+          <Footer />
         </div>
       );
     }} />
